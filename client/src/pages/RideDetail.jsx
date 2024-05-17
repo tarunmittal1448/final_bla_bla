@@ -16,25 +16,24 @@ const RideDetail = () => {
   const { rideId } = useParams();
   const { loading, data, error } = useFetch(`rides/${rideId}`);
 
-  const handleBook = async () => {
+  const handleBook = async() => {
     try {
       const res = await axios.get(`${apiUri}/rides/${rideId}/join`, { withCredentials: true });
-      console.log('Booking response:', res);
-      toast(res, {
-        description: format(new Date(), 'PPp'),
+      toast({
+        title: 'Success',
+        description: 'Ride booked successfully!',
+        status: 'success', // Optionally specify the status for different styles
       });
-    } catch (err) {
-      console.error('Booking error:', err);
-      // Add specific error handling based on the error response
-      if (err.response && err.response.status === 404) {
-        // Handle 404 error, e.g., show a toast message or redirect to an error page
-        toast.error('Ride not found. Please try again later.');
-      } else {
-        // Handle other errors
-        toast.error('An error occurred while booking the ride.');
-      }
+    } catch(err) {
+      console.log(err);
+      toast({
+        title: 'Error',
+        description: 'Failed to book the ride.',
+        status: 'error',
+      });
     }
   };
+  
   
 
   if (loading) {

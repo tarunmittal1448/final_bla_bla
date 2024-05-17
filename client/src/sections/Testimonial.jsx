@@ -17,8 +17,8 @@ const Testimonial = () => {
     {
       desc: "I just had to share my recent experience with RideShare because it has truly been a game-changer for me! From the easy sign-up process to the consistently reliable service, this app has quickly become my go-to for hassle-free transportation.",
       img: "https://dummyimage.com/106x106",
-      user: "Murphy",
-      prof: "Backend Developer"
+      user: "Hero",
+      prof: "Frontend Developer"
     }
   ]
   return (

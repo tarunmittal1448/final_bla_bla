@@ -47,32 +47,51 @@ export const findRides = async (req, res, next) => {
   }
 }
 
-export const joinRide = async (req, res, next) =>{
-  try{
+export const joinRide = async (req, res, next) => {
+  try {
+    // Check if req.user is populated and contains user information
+    if (!req.user) {
+      return res.status(401).json({ message: 'You are not authenticated!' });
+    }
+
+    // Fetch the ride based on the provided ID
     const ride = await Ride.findById(req.params.id);
-    console.log(ride);
+
+    if (!ride) {
+      // If ride doesn't exist, return an error
+      return res.status(404).json({ message: 'Ride not found' });
+    }
 
     if (ride.passengers.includes(req.user.id)) {
-      res.status(400).json('You already joined this ride!');
-    }
-    if (ride.passengers.length >= ride.availableSeats) {
-      res.status(400).json('Ride is full!');
+      // If user has already joined the ride, return a conflict error
+      return res.status(409).json({ message: 'You already joined this ride!' });
     }
 
+    if (ride.passengers.length >= ride.availableSeats) {
+      // If ride is full, return a forbidden error
+      return res.status(403).json({ message: 'Ride is full!' });
+    }
+
+    // Update ride passengers and availableSeats
     await Ride.updateOne(
       { _id: ride._id },
       { $push: { passengers: req.user.id }, $inc: { availableSeats: -1 } }
-    ),
+    );
+
+    // Update user's ridesJoined
     await User.updateOne(
       { _id: req.user.id },
       { $push: { ridesJoined: ride._id } }
-    ),
+    );
 
+    // Return success message
     res.status(200).json({ message: 'Successfully joined the ride!' });
-  }catch(err){
-    next(err);
+  } catch (err) {
+    // Handle any errors
+    next(err); // Pass the error to the error handling middleware
   }
-}
+};
+
 
 export const createRide = async (req, res, next) =>{
   try{
